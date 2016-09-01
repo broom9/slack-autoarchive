@@ -63,7 +63,9 @@ def get_inactive_channels(all_unarchived_channels, too_old_datetime):
     payload['channel'] = channel['id']
     channel_history = slack_api_http_get(api_endpoint=api_endpoint, payload=payload)
     last_message_datetime = get_last_message_timestamp(channel_history, datetime.fromtimestamp(float(channel['created'])))
-    if last_message_datetime <= too_old_datetime:
+    if len(channel['members']) == 0:
+        inactive_channels.append(channel)
+    elif last_message_datetime <= too_old_datetime:
       if not (len(channel_history['messages']) > 30 and len(channel['members']) > 5):
         inactive_channels.append(channel)
   return inactive_channels
