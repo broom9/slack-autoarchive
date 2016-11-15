@@ -66,8 +66,8 @@ def get_inactive_channels(all_unarchived_channels, too_old_datetime):
     if len(channel['members']) == 0:
         inactive_channels.append(channel)
     elif last_message_datetime <= too_old_datetime:
-      if not (len(channel_history['messages']) > 30 and len(channel['members']) > 5):
-        inactive_channels.append(channel)
+        if not (len(filter(lambda x: datetime.fromtimestamp(float(x['ts'])) >= too_old_datetime, channel_history['messages'])) > 30 and len(channel['members']) > 5):
+            inactive_channels.append(channel)
   return inactive_channels
 
 def filter_out_whitelist_channels(inactive_channels):
