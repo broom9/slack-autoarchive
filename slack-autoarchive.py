@@ -66,7 +66,7 @@ def get_inactive_channels(all_unarchived_channels, too_old_datetime):
     if len(channel['members']) == 0:
         inactive_channels.append(channel)
     elif last_message_datetime <= too_old_datetime:
-        if not (len(filter(lambda x: datetime.fromtimestamp(float(x['ts'])) >= too_old_datetime, channel_history['messages'])) > 30 and len(channel['members']) > 5):
+        if not (len(filter(lambda x: datetime.fromtimestamp(float(x['ts'])) >= too_old_datetime, channel_history['messages'])) > 10 and len(channel['members']) > 5):
             inactive_channels.append(channel)
   return inactive_channels
 
@@ -94,7 +94,7 @@ def archive_inactive_channels(channels):
   for channel in channels:
     if not DRY_RUN:
       message = "This channel has had no activity for %s days. It is being auto-archived." % DAYS_INACTIVE
-      message += " If you feel this is a mistake you can <https://slack.com/archives/archived|unarchive this channel> to bring it back at any point."
+      message += " If you feel this is a mistake you can unarchive this channel by clicking the link below to bring it back at any point."
       send_channel_message(channel['id'], message)
       if ADMIN_CHANNEL:
         send_channel_message(ADMIN_CHANNEL, "Archiving channel... %s" % channel['name'])
