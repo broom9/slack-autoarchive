@@ -1,6 +1,7 @@
 #!/usr/local/bin/python
 
 from datetime import timedelta, datetime
+from time import sleep
 import os
 import sys
 import requests
@@ -23,11 +24,18 @@ def slack_api_http_get(api_endpoint=None, payload=None):
   uri = 'https://slack.com/api/' + api_endpoint
   payload['token'] = SLACK_TOKEN
   try:
-    response = requests.get(uri, params=payload)
-    if response.status_code == requests.codes.ok:
-      return response.json()
-    else:
-      raise Exception(response.content)
+    attempts = 0
+    while attempts < 3:
+        response = requests.get(uri, params=payload)
+        if response.status_code == requests.codes.ok:
+          return response.json()
+        elif response.status_code == requests.codes.too_many_requests:
+          # print "sleep %s seconds for API rate limit" % response.headers['Retry-After'];
+          attempts += 1;
+          sleep(int(response.headers['Retry-After']));
+        else:
+          raise Exception(response.content)
+      
   except Exception as e:
     raise Exception(e)
 
