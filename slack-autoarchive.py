@@ -109,7 +109,7 @@ def archive_inactive_channels(channels):
       payload = {'channel': channel['id']}
       slack_api_http_get(api_endpoint=api_endpoint, payload=payload)
 
-    print "Archiving channel... %s" % channel['name']
+    print "Archiving channel... %s" % channel['name'].encode('utf8', 'replace')
 
 if DRY_RUN:
   print "THIS IS A DRY RUN. NO CHANNELS ARE ACTUALLY ARCHIVED."
