@@ -27,7 +27,7 @@ def slack_api_http_get(api_endpoint=None, payload=None):
     attempts = 0
     while attempts < 3:
         response = requests.get(uri, params=payload)
-        if response.status_code == requests.codes.ok:
+        if response.status_code == requests.codes.ok and response.json()['ok']:
           return response.json()
         elif response.status_code == requests.codes.too_many_requests:
           # print "sleep %s seconds for API rate limit" % response.headers['Retry-After'];
