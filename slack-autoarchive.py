@@ -44,11 +44,16 @@ def slack_api_http_get(api_endpoint=None, payload=None):
 def get_all_channels():
   payload  = {'exclude_archived': 1}
   api_endpoint = 'channels.list'
-  channels = slack_api_http_get(api_endpoint=api_endpoint, payload=payload)['channels']
-  all_channels = []
-  for channel in channels:
-    all_channels.append({'id': channel['id'], 'name': channel['name'], 'created': channel['created']})
-  return all_channels
+  resp_json = slack_api_http_get(api_endpoint=api_endpoint, payload=payload)
+  try:
+    channels = resp_json['channels']
+    all_channels = []
+    for channel in channels:
+      all_channels.append({'id': channel['id'], 'name': channel['name'], 'created': channel['created']})
+    return all_channels
+  except Exception as e:
+    print resp_json
+    raise Exception(e)
 
 
 def get_last_message_timestamp(channel_history, too_old_datetime):
