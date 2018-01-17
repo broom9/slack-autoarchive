@@ -47,7 +47,7 @@ def get_all_channels():
   channels = slack_api_http_get(api_endpoint=api_endpoint, payload=payload)['channels']
   all_channels = []
   for channel in channels:
-    all_channels.append({'id': channel['id'], 'name': channel['name'], 'created': channel['created'], 'members': channel['members']})
+    all_channels.append({'id': channel['id'], 'name': channel['name'], 'created': channel['created']})
   return all_channels
 
 
@@ -71,10 +71,13 @@ def get_inactive_channels(all_unarchived_channels, too_old_datetime):
     payload['channel'] = channel['id']
     channel_history = slack_api_http_get(api_endpoint=api_endpoint, payload=payload)
     last_message_datetime = get_last_message_timestamp(channel_history, datetime.fromtimestamp(float(channel['created'])))
-    if len(channel['members']) == 0:
+    members = slack_api_http_get(api_endpoint="conversations.members", payload={'channel': channel['id'], 'limit': 20})['members']
+    if len(members) == 0:
+        print "Channel %s is inactive because of zero members" % channel['name']
         inactive_channels.append(channel)
     elif last_message_datetime <= too_old_datetime:
-        if not (len(filter(lambda x: datetime.fromtimestamp(float(x['ts'])) >= too_old_datetime, channel_history['messages'])) > 10 and len(channel['members']) > 5):
+        if not (len(filter(lambda x: datetime.fromtimestamp(float(x['ts'])) >= too_old_datetime, channel_history['messages'])) > 10 and len(members) > 5):
+            print "Channel %s is inactive because the latest human message is older than %s" % (channel['name'], too_old_datetime)
             inactive_channels.append(channel)
   return inactive_channels
 
@@ -116,5 +119,8 @@ if DRY_RUN:
 all_unarchived_channels = get_all_channels()
 inactive_channels       = get_inactive_channels(all_unarchived_channels, TOO_OLD_DATETIME)
 channels_to_archive = filter_out_whitelist_channels(inactive_channels)
+print "Channels to archive:"
+for c in channels_to_archive:
+    print c["name"]
 archive_inactive_channels(channels_to_archive)
 
