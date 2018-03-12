@@ -1,10 +1,15 @@
 #!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+
 
 from datetime import timedelta, datetime
 from time import sleep
 import os
 import sys
 import requests
+
+reload(sys)  
+sys.setdefaultencoding('utf8')
 
 #
 # This will archive inactive channels. The inactive period is in days as 'DAYS_INACTIVE'
@@ -49,7 +54,7 @@ def get_all_channels():
     channels = resp_json['channels']
     all_channels = []
     for channel in channels:
-      all_channels.append({'id': channel['id'], 'name': channel['name'], 'created': channel['created']})
+        all_channels.append({'id': channel['id'], 'name': channel['name'], 'created': channel['created']})
     return all_channels
   except Exception as e:
     print resp_json
