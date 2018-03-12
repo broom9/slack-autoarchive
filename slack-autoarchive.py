@@ -1,4 +1,6 @@
 #!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+
 
 from datetime import timedelta, datetime
 from time import sleep
@@ -49,7 +51,8 @@ def get_all_channels():
     channels = resp_json['channels']
     all_channels = []
     for channel in channels:
-      all_channels.append({'id': channel['id'], 'name': channel['name'], 'created': channel['created']})
+        if channel['name'][0:2] == 'he':
+            all_channels.append({'id': channel['id'], 'name': channel['name'], 'created': channel['created']})
     return all_channels
   except Exception as e:
     print resp_json
