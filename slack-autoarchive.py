@@ -8,6 +8,9 @@ import os
 import sys
 import requests
 
+reload(sys)  
+sys.setdefaultencoding('utf8')
+
 #
 # This will archive inactive channels. The inactive period is in days as 'DAYS_INACTIVE'
 # You can put this in a cron job to run daily to do slack cleanup.
